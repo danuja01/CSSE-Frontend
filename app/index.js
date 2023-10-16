@@ -1,34 +1,32 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import {Stack,useRouter} from "expo-router";
+import { TouchableOpacity , SafeAreaView , View , Text} from "react-native";
 
-export default function Page() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Hello World</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
-      </View>
-    </View>
-  );
+export default function PAge() {
+    const router = useRouter();
+    return (
+      <SafeAreaView>
+        <Stack.Screen/>
+        <View>
+          <TouchableOpacity onPress={() => router.push("/savedcard")}>
+            <Text>Saved Card</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/mobiletopup")}>
+            <Text>Mobile Topup</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/paymentsuccess")}>
+            <Text>Payment</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/ticketdetails")}>
+            <Text>ticket</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/ticketprice")}>
+            <Text>ticket price</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/triphistory")}>
+            <Text>trip</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
-  },
-});
