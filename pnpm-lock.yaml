@@ -15,6 +15,7 @@ specifiers:
   expo-barcode-scanner: ~12.5.3
   expo-camera: ~13.4.4
   expo-constants: ~14.4.2
+  expo-image: ^1.5.1
   expo-linking: ~5.0.2
   expo-router: 2.0.0
   expo-splash-screen: ~0.20.4
@@ -41,6 +42,7 @@ dependencies:
   expo-barcode-scanner: 12.5.3_expo@49.0.13
   expo-camera: 13.4.4_expo@49.0.13
   expo-constants: 14.4.2_expo@49.0.13
+  expo-image: 1.5.1_expo@49.0.13
   expo-linking: 5.0.2_expo@49.0.13
   expo-router: 2.0.0_aq7abl56bxclrcdootpzffjjdi
   expo-splash-screen: 0.20.5_expo@49.0.13
@@ -3745,6 +3747,14 @@ packages:
 
   /expo-image-loader/4.3.0_expo@49.0.13:
     resolution: {integrity: sha512-2kqJIO+oYM8J3GbvTUHLqTSpt1dLpOn/X0eB4U4RTuzz/faj8l/TyQELsMBLlGAkweNUuG9LqznbaBz+WuSFEw==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.13_@babel+core@7.23.2
+    dev: false
+
+  /expo-image/1.5.1_expo@49.0.13:
+    resolution: {integrity: sha512-133chFSiaiZDeHRmABo/D+j/ByhPjhRwa4X2vgok1E6I2BapJ8n6ZiXODbABNH02EDYssV4Ih71tAWpheMzl/g==}
     peerDependencies:
       expo: '*'
     dependencies:

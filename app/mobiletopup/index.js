@@ -1,14 +1,26 @@
 import * as React from "react";
 import { Image } from "expo-image";
-import { StyleSheet, Text, View , TouchableOpacity , TextInput} from "react-native";
-import { FontFamily, Color, FontSize, Border, Padding } from "../../styles/mobiletop";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
+import {
+  FontFamily,
+  Color,
+  FontSize,
+  Border,
+  Padding,
+} from "../../styles/mobiletop";
 
 const MobileTopUp = () => {
-  const [amount, setamount] = React.useState('');
-  const [cardno, setcardno] = React.useState('');
-  const [name, setname] = React.useState('');
-  const [expiredate, setexpiredate] = React.useState('');
-  const [cvv, setcvv] = React.useState('');
+  const [amount, setamount] = React.useState("");
+  const [cardno, setcardno] = React.useState("");
+  const [name, setname] = React.useState("");
+  const [expiredate, setexpiredate] = React.useState("");
+  const [cvv, setcvv] = React.useState("");
   return (
     <View style={styles.mobileTopUp2}>
       <Image
@@ -28,7 +40,7 @@ const MobileTopUp = () => {
         <Image
           style={styles.topBarChild}
           contentFit="cover"
-          source={require("../../assets/mobiletopup/frame-23.png")}
+          // source={require("../../assets/mobiletopup/frame-23.png")}
         />
       </View>
       <Text style={[styles.amount, styles.rs150Typo]}>Amount</Text>
@@ -73,10 +85,10 @@ const MobileTopUp = () => {
               />
             </View>
             <TextInput
-                  style={[styles.cinput]}
-                  value={cardno}  // Bind the value to the state variable
-                  onChangeText={(text) => setcardno(text)}  // Update the state on input change
-                  placeholder="Enter your card number"
+              style={[styles.cinput]}
+              value={cardno} // Bind the value to the state variable
+              onChangeText={(text) => setcardno(text)} // Update the state on input change
+              placeholder="Enter your card number"
             />
           </View>
         </View>
@@ -91,10 +103,10 @@ const MobileTopUp = () => {
             />
             <View style={[styles.filledMarker5, styles.filledPosition]} />
             <TextInput
-                  style={[styles.cinput]}
-                  value={name}  // Bind the value to the state variable
-                  placeholder="Enter your cardholder name"
-                  onChangeText={(text) => setname(text)}  // Update the state on input change
+              style={[styles.cinput]}
+              value={name} // Bind the value to the state variable
+              placeholder="Enter your cardholder name"
+              onChangeText={(text) => setname(text)} // Update the state on input change
             />
           </View>
         </View>
@@ -110,10 +122,10 @@ const MobileTopUp = () => {
               />
               <View style={[styles.filledMarker6, styles.filledPosition]} />
               <TextInput
-                  style={[styles.cinput]}
-                  value={expiredate}  // Bind the value to the state variable
-                  onChangeText={(text) => setexpiredate(text)}  // Update the state on input change
-            />
+                style={[styles.cinput]}
+                value={expiredate} // Bind the value to the state variable
+                onChangeText={(text) => setexpiredate(text)} // Update the state on input change
+              />
             </View>
           </View>
           <View style={styles.cvvCvc}>
@@ -137,19 +149,19 @@ const MobileTopUp = () => {
               />
               <View style={[styles.filledMarker6, styles.filledPosition]} />
               <TextInput
-                  style={[styles.cinput]}
-                  value={cvv}  // Bind the value to the state variable
-                  onChangeText={(text) => setcvv(text)}  // Update the state on input change
-            />
+                style={[styles.cinput]}
+                value={cvv} // Bind the value to the state variable
+                onChangeText={(text) => setcvv(text)} // Update the state on input change
+              />
             </View>
           </View>
         </View>
       </View>
       <View style={[styles.mobileTopUpChild, styles.pricePosition]} />
       <TextInput
-        style={[styles.price, styles.pricePosition , styles.ainput]}
-        value={amount}  // Bind the value to the state variable
-        onChangeText={(text) => setamount(text)}  // Update the state on input change
+        style={[styles.price, styles.pricePosition, styles.ainput]}
+        value={amount} // Bind the value to the state variable
+        onChangeText={(text) => setamount(text)} // Update the state on input change
       />
       <View style={[styles.rectangleParent, styles.topBarFlexBox]}>
         <View style={styles.frameChild} />
@@ -181,7 +193,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 300,
     fontSize: 18, // Adjust the fontSize as needed
-    color: 'gray'
+    color: "gray",
   },
   topBarFlexBox: {
     alignItems: "center",

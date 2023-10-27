@@ -1,6 +1,9 @@
+import { useRouter } from "expo-router";
 import { Text, View, TouchableOpacity, StyleSheet, Image } from "react-native";
 
 const Services = () => {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -18,7 +21,10 @@ const Services = () => {
           />
           <Text style={styles.serviceTitle}>Trip</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.serviceContainer}>
+        <TouchableOpacity
+          onPress={() => router.push("/topup")}
+          style={styles.serviceContainer}
+        >
           <Image
             source={require("../assets/images/Icon3.png")}
             resizeMode="contain"

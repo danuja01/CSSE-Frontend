@@ -7,6 +7,7 @@ import Home from "./home";
 import SavedCards from "./saved-cards";
 import Scan from "./qr-scanner/qr";
 import QrPage from "./qr";
+import TripHistory from "./triphistory";
 
 const Tab = createBottomTabNavigator();
 
@@ -66,7 +67,7 @@ export default function Page() {
       />
       <Tab.Screen
         name="History"
-        component={History}
+        component={TripHistory}
         options={{
           tabBarLabel: "History",
           tabBarIcon: ({ color, size }) => (

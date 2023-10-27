@@ -1,5 +1,11 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+} from "react-native";
 import { Stack, useRouter } from "expo-router";
 import Balance from "../../components/balance";
 import Services from "../../components/services";
@@ -15,6 +21,9 @@ export default Home = () => {
         <Balance />
         <Services />
         <Transaction />
+        <TouchableOpacity onPress={() => router.push("/supun")}>
+          <Text>sasasa</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
