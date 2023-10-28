@@ -17,6 +17,7 @@ import { getDatabase, ref, onValue, push, set , get } from "firebase/database";
 import { db } from "../../firebase/config"; // Import your Firebase config
 import { Stack } from "expo-router";
 import { Camera } from "expo-camera";
+import { auth } from '../../firebase/config';
 
 export default function Scan() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -114,9 +115,28 @@ export default function Scan() {
     }).catch((error) => {
       console.error("Error fetching data:", error);
     });
-
     console.log(userData1);
     console.log(userData);
+
+    const userId = auth.currentUser.uid;
+
+    const TripDetails = {
+      startPoint: startPoint,
+      endPoint: endPoint,
+      fair: calculateFair(),
+      date: new Date().toLocaleString(),
+      time: new Date().toLocaleTimeString(),
+    };
+    try {
+      const cardRef = ref(db, `triphistory/${userId}`);
+      const newCardRef = push(cardRef); 
+      set(newCardRef, TripDetails);
+      console.log("Trip History details saved successfully!");
+    } catch (error) {
+      console.error("Error saving card details:", error);
+    }
+
+    
   };
 
   const calculateFair = () => {
