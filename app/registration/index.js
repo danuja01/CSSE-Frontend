@@ -21,7 +21,6 @@ const Registration = () => {
         try {
           const userRef = ref(db, `users/${user.uid}`);
           set(userRef, {
-            userId: user.uid,
             acc: 0,
           });
           console.log("User info saved to Realtime Database");

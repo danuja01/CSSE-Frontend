@@ -7,5 +7,5 @@ export default function Page() {
 
   if (!rootNavigationState?.key) return null;
 
-  return <Redirect href={"/login"} />;
+  return <Redirect href={"/topup"} />;
 }
