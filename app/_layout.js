@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { Slot, Stack } from "expo-router";
+import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,9 +10,20 @@ import { Stack, useRouter } from "expo-router";
 import Balance from "../../components/balance";
 import Services from "../../components/services";
 import Transaction from "../../components/transaction";
+import { db } from "../../firebase/config";
+import { get, ref } from "firebase/database";
 
 export default Home = () => {
   const router = useRouter();
+
+  const getData = async () => {
+    const snapshot = await get(ref(db, "names"));
+    console.log(snapshot.val());
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -21,7 +32,7 @@ export default Home = () => {
         <Balance />
         <Services />
         <Transaction />
-        <TouchableOpacity onPress={() => router.push("/supun")}>
+        <TouchableOpacity onPress={() => router.push("/trip")}>
           <Text>sasasa</Text>
         </TouchableOpacity>
       </View>
