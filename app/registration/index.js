@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, StyleSheet } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/config"; // Make sure to import the auth object
+import { auth , db } from "../../firebase/config"; // Make sure to import the auth object
 import { router, useNavigation , useRouter} from 'expo-router';
+import { getDatabase, ref, onValue, push, set } from "firebase/database";
 
 const Registration = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +16,19 @@ const Registration = () => {
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("User registered successfully!", user);
-        router.push('/login');
+
+        // Save user info to Firebase Realtime Database
+        try {
+          const userRef = ref(db, `users/${user.uid}`);
+          set(userRef, {
+            userId: user.uid,
+            acc: 0,
+          });
+          console.log("User info saved to Realtime Database");
+          router.push('/login');
+        } catch (error) {
+          console.error("Error saving user info to Realtime Database:", error);
+        }
       })
       .catch((error) => {
         console.error("Error registering user:", error);
