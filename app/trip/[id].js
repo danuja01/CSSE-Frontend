@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import React from "react";
+import {React,useEffect ,useState} from "react";
 import {
   Text,
   View,
@@ -8,8 +8,40 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import { getDatabase, ref, onValue, push, set } from "firebase/database";
+import { db } from "../../firebase/config"; // Import your Firebase config
+import { auth } from '../../firebase/config';
+import { useRoute } from '@react-navigation/native';
 
 export default function SavedCards() {
+  const route = useRoute();
+  const { id } = route.params;
+
+  const userId = auth.currentUser.uid;
+  const [history , sethistory] = useState([]);
+
+  const fetchhistory = () => {
+    const cardRef = ref(db, `triphistory/${userId}/${id}`);
+  
+    onValue(cardRef, (snapshot) => {
+      const cardsData = snapshot.val();
+      if (cardsData) {
+        const cardsArray = Object.entries(cardsData).map(([key, value]) => ({
+          ...value,
+        }));
+        sethistory(cardsData);
+      } else {
+        sethistory([]);
+      }
+    });
+  };
+
+  console.log(history);
+  
+  useEffect(() => {
+    fetchhistory();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <Stack.Screen options={{ header: () => null }} />
@@ -22,13 +54,13 @@ export default function SavedCards() {
             <View style={styles.departlabelCover}>
               <Text style={styles.departLabel}>Depart</Text>
             </View>
-            <Text style={styles.departValue}>Colombo, Western Province</Text>
+            <Text style={styles.departValue}>{history.endPoint}</Text>
           </View>
           <View style={styles.departTime}>
             <View style={styles.timeLabelCover}>
               <Text style={styles.timeLabel}>Time</Text>
             </View>
-            <Text style={styles.departValue}>9:00 AM</Text>
+            <Text style={styles.departValue}>{history.time}</Text>
           </View>
         </View>
         <View style={[styles.departContainer, { marginTop: 20 }]}>
@@ -44,7 +76,7 @@ export default function SavedCards() {
                 source={require("../../assets/images/location.png")}
                 style={styles.busRouteIcon}
               />
-              <Text style={styles.route}>Kandy-Colombo</Text>
+              <Text style={styles.route}>{history.startPoint}-{history.endPoint}</Text>
             </View>
             <Text style={styles.busNumber}>NA-1345</Text>
           </View>
