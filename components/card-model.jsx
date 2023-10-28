@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const CardModel = () => {
+const CardModel = ({ cardNumber, holdersName, month, year , nickname }) => {
   return (
     <View>
       <TouchableOpacity activeOpacity={0.8}>
@@ -10,16 +10,17 @@ const CardModel = () => {
           style={styles.card}
           imageStyle={styles.backgroundImage}
         >
-          <Text style={styles.nickName}>My-Commercial</Text>
-          <Text style={styles.number}>3453 **** **** ****</Text>
+          {/* The nickname is currently hardcoded, you can add it dynamically */}
+          <Text style={styles.nickName}>{nickname}</Text>
+          <Text style={styles.number}>{cardNumber}</Text>
           <View style={styles.cardContainer}>
             <View>
               <Text style={styles.nameTag}>Name</Text>
-              <Text style={styles.name}>Danuja Jayasuriya</Text>
+              <Text style={styles.name}>{holdersName}</Text>
             </View>
             <View>
               <Text style={styles.expiryTag}>Expiry</Text>
-              <Text style={styles.expiryDate}>03/24</Text>
+              <Text style={styles.expiryDate}>{month}/{year}</Text>
             </View>
           </View>
         </ImageBackground>
