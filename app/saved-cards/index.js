@@ -15,7 +15,8 @@ import CardModel from "../../components/card-model";
 import { ScrollView } from "react-native-gesture-handler";
 import { getDatabase, ref, onValue, push, set } from "firebase/database";
 import { db } from "../../firebase/config"; // Import your Firebase config
-import { auth } from '../../firebase/config';
+import { auth } from "../../firebase/config";
+import NewCard from "../../components/newCard";
 
 export default function SavedCards() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -50,7 +51,7 @@ export default function SavedCards() {
 
     try {
       const cardRef = ref(db, `SavedCards/${userId}`);
-      const newCardRef = push(cardRef); 
+      const newCardRef = push(cardRef);
       set(newCardRef, cardDetails);
       setIsModalVisible(false);
       console.log("Card details saved successfully!");
@@ -119,55 +120,13 @@ export default function SavedCards() {
             </View>
           </View>
         </TouchableWithoutFeedback>
-        <Modal visible={isModalVisible} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-              <View style={styles.overlay} />
-            </TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Add New Card</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="NickName"
-                value={formData.nickname}
-                onChangeText={(text) => handleInputChange("nickname", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Card Number"
-                value={formData.cardNumber}
-                onChangeText={(text) => handleInputChange("cardNumber", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Holder's Name"
-                value={formData.holdersName}
-                onChangeText={(text) => handleInputChange("holdersName", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Month"
-                value={formData.month}
-                onChangeText={(text) => handleInputChange("month", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Year"
-                value={formData.year}
-                onChangeText={(text) => handleInputChange("year", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="CVV"
-                value={formData.cvv}
-                onChangeText={(text) => handleInputChange("cvv", text)}
-              />
-              <TouchableOpacity onPress={handleAddNewCard}>
-                <Text style={styles.modalBtn}>Next</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <NewCard
+          isModalVisible={isModalVisible}
+          setIsModalVisible={setIsModalVisible}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleAddNewCard={handleAddNewCard}
+        />
       </ScrollView>
     </SafeAreaView>
   );
