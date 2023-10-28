@@ -1,5 +1,4 @@
-import { Stack } from "expo-router";
-import {React,useEffect ,useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -7,22 +6,31 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Modal,
 } from "react-native";
-import { getDatabase, ref, onValue, push, set } from "firebase/database";
-import { db } from "../../firebase/config"; // Import your Firebase config
+import {
+  getDatabase,
+  ref,
+  onValue,
+  push,
+  set
+} from "firebase/database";
+import { db } from "../../firebase/config";
 import { auth } from '../../firebase/config';
 import { useRoute } from '@react-navigation/native';
+import { Stack , useRouter } from "expo-router";
 
 export default function SavedCards() {
   const route = useRoute();
+  const router = useRouter();
   const { id } = route.params;
 
   const userId = auth.currentUser.uid;
-  const [history , sethistory] = useState([]);
+  const [history, sethistory] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const fetchhistory = () => {
     const cardRef = ref(db, `triphistory/${userId}/${id}`);
-  
     onValue(cardRef, (snapshot) => {
       const cardsData = snapshot.val();
       if (cardsData) {
@@ -36,21 +44,28 @@ export default function SavedCards() {
     });
   };
 
-  console.log(history);
-  
   useEffect(() => {
     fetchhistory();
   }, []);
 
+  const handleEndTrip = () => {
+    setShowPopup(true);
+  };
+
+  const handleConfirm = () => {
+    setShowPopup(false);
+    router.push(`/ticketprice/${id}`);
+    // Implement your logic here when Confirm is clicked
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <Stack.Screen options={{ header: () => null }} />
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Trip</Text>
         </View>
         <View style={styles.departContainer}>
-          <View style={styles.departLocation}>
+        <View style={styles.departLocation}>
             <View style={styles.departlabelCover}>
               <Text style={styles.departLabel}>Depart</Text>
             </View>
@@ -80,16 +95,94 @@ export default function SavedCards() {
             </View>
             <Text style={styles.busNumber}>NA-1345</Text>
           </View>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleEndTrip}>
             <Text style={styles.btnText}>End Trip</Text>
           </TouchableOpacity>
+          {/* Popup */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showPopup}
+            onRequestClose={() => {
+              setShowPopup(false);
+            }}
+          >
+            <View style={styles.popupContainer}>
+              <View style={styles.popupContent}>
+                <Text style={styles.popupTitle}>Trip Details</Text>
+                  <View style={styles.historyItem}>
+                    <Text style={styles.historyLabel}>Started Point</Text>
+                    <Text style={styles.historyValue}>{history.startPoint}</Text>
+                  </View>
+                  <View style={styles.historyItem}>
+                    <Text style={styles.historyLabel}>Ended Point</Text>
+                    <Text style={styles.historyValue}>{history.endPoint}</Text>
+                  </View>
+                  <View style={styles.historyItem}>
+                    <Text style={styles.historyLabel}>Time</Text>
+                    <Text style={styles.historyValue}>{history.time}</Text>
+                  </View>
+                  <View style={styles.historyItem}>
+                    <Text style={styles.historyLabel}>Amount</Text>
+                    <Text style={styles.historyLabel}>RS.{history.fair}</Text>
+                  </View>
+                <TouchableOpacity
+                  style={styles.confirmButton}
+                  onPress={handleConfirm}
+                >
+                  <Text style={styles.confirmButtonText}>Checkout</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </View>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  popupContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  popupContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  popupTitle: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  historyItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    width: "100%",
+  },
+  historyLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  historyValue: {
+    fontSize: 16,
+  },
+  confirmButton: {
+    backgroundColor: "#135EF2",
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  confirmButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     padding: 24,
