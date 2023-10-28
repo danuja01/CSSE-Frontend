@@ -22,6 +22,7 @@ export default function SavedCards() {
   const [selectedCard, setSelectedCard] = useState(null);
   const [enteredAmount, setEnteredAmount] = useState("");
   const [userData, setUserData] = useState({});
+  const [userAcc, setUserAcc] = useState(0);
 
   const handleInputChange = (field, value) => {
     setFormData({
@@ -61,7 +62,8 @@ export default function SavedCards() {
   };
 
     // Assuming you have a user ID
-const userId = "u3B0z8mcFUSTTbs3yeoLVqKjjvI2";
+const userId = auth.currentUser.uid;
+console.log(userId);
 
 // Create a reference to the user's data
 const userRef = ref(db, `users/${userId}`);
@@ -98,6 +100,7 @@ const handleTopUp = () => {
 
           setEnteredAmount("");
           console.log("User's acc updated successfully!");
+          setUserAcc(updatedAcc);
         } else {
           console.error("No data available for this user");
         }
@@ -250,7 +253,7 @@ const handleTopUp = () => {
         </View>
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total Amount (RS)</Text>
-          <Text style={styles.totalAmount}>{userData}</Text>
+          <Text style={styles.totalAmount}>{userAcc}</Text>
         </View>
         <View
           style={{
