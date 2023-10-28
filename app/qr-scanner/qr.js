@@ -15,7 +15,7 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getDatabase, ref, onValue, push, set , get } from "firebase/database";
 import { db } from "../../firebase/config"; // Import your Firebase config
-import { Stack } from "expo-router";
+import { Stack , useRouter } from "expo-router";
 import { Camera } from "expo-camera";
 import { auth } from '../../firebase/config';
 
@@ -25,7 +25,8 @@ export default function Scan() {
   const [stops, setstops] = useState("");
   const [userData, setUserData] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [userData1, setUserData1] = useState(null);
+  const [userData1, setUserData1] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -103,41 +104,50 @@ export default function Scan() {
   const handleScan = () => {
     setModalVisible(false);
     const userRef1 = ref(db, `stops/${endPoint}`);
-
+  
     // Use get to retrieve the data
     get(userRef1).then((snapshot) => {
       if (snapshot.exists()) {
-        const userData1 = snapshot.val();
-        setUserData1(userData1.count);
+        const userData1 = snapshot.val().count;
+        setUserData1(userData1);
+  
+        // Check if userData and userData1 are valid numbers
+        if (!isNaN(userData) && !isNaN(userData1)) {
+          const distance = userData1 - userData;
+          const fair = distance * 10;
+  
+          console.log(`Distance: ${distance}`);
+          console.log(`Fair: ${fair}`);
+  
+          const userId = auth.currentUser.uid;
+  
+          const TripDetails = {
+            startPoint: startPoint,
+            endPoint: endPoint,
+            fair: fair,
+            date: new Date().toLocaleString(),
+            time: new Date().toLocaleTimeString(),
+          };
+          try {
+            const cardRef = ref(db, `triphistory/${userId}`);
+            const newCardRef = push(cardRef); 
+            set(newCardRef, TripDetails);
+            console.log("Trip History details saved successfully!");
+            router.push("/trip");
+          } catch (error) {
+            console.error("Error saving card details:", error);
+          }
+        } else {
+          console.error("Invalid userData or userData1 value");
+        }
       } else {
         console.log("No data available");
       }
     }).catch((error) => {
       console.error("Error fetching data:", error);
     });
-    console.log(userData1);
-    console.log(userData);
-
-    const userId = auth.currentUser.uid;
-
-    const TripDetails = {
-      startPoint: startPoint,
-      endPoint: endPoint,
-      fair: calculateFair(),
-      date: new Date().toLocaleString(),
-      time: new Date().toLocaleTimeString(),
-    };
-    try {
-      const cardRef = ref(db, `triphistory/${userId}`);
-      const newCardRef = push(cardRef); 
-      set(newCardRef, TripDetails);
-      console.log("Trip History details saved successfully!");
-    } catch (error) {
-      console.error("Error saving card details:", error);
-    }
-
-    
   };
+  
 
   const calculateFair = () => {
     const distance = userData1 - userData;
