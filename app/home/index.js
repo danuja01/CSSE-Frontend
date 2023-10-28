@@ -12,6 +12,8 @@ import Services from "../../components/services";
 import Transaction from "../../components/transaction";
 import { db } from "../../firebase/config";
 import { get, ref } from "firebase/database";
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase/config';
 
 export default Home = () => {
   const router = useRouter();
@@ -23,6 +25,21 @@ export default Home = () => {
 
   useEffect(() => {
     getData();
+  }, []);
+
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('Current user:', user.uid);
+        // User is signed in, you can navigate or perform actions here
+        // For example, navigate to the user's dashboard or profile page
+      } else {
+        console.log('No user is signed in');
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup the listener when component unmounts
   }, []);
 
   return (
