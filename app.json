@@ -4,6 +4,9 @@
     "web": {
       "bundler": "metro"
     },
+    "ios": {
+      "softwareKeyboardLayoutMode": "pan"
+    },
     "plugins": ["expo-router", "expo-camera"],
     "name": "CSSE-frontend",
     "slug": "CSSE-frontend"
