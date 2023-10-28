@@ -1,11 +1,23 @@
 import { Stack } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, onValue, push, set , get } from "firebase/database";
+import { getDatabase, ref, onValue, push, set, get } from "firebase/database";
 import { db } from "../../firebase/config";
-import { Text, View, SafeAreaView, StyleSheet, Image, TouchableOpacity, TextInput, Modal, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { MyTabs } from "../../components/common/bottomNav";
-import { auth } from '../../firebase/config';
+import { auth } from "../../firebase/config";
+import NewCard from "../../components/newCard";
 
 export default function SavedCards() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,11 +43,23 @@ export default function SavedCards() {
     });
   };
 
-// Assuming you have a user ID
-const userId = auth.currentUser.uid;
-console.log(userId);
+  // Assuming you have a user ID
+  const userId = auth.currentUser.uid;
+  console.log(userId);
 
   const handleAddNewCard = () => {
+    if (
+      !formData.nickname ||
+      !formData.cardNumber ||
+      !formData.holdersName ||
+      !formData.month ||
+      !formData.year ||
+      !formData.cvv
+    ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     const cardDetails = {
       nickname: formData.nickname,
       cardNumber: formData.cardNumber,
@@ -47,8 +71,9 @@ console.log(userId);
 
     try {
       const cardRef = ref(db, `SavedCards/${userId}`);
-      const newCardRef = push(cardRef); 
+      const newCardRef = push(cardRef);
       set(newCardRef, cardDetails);
+      alert("Card details saved successfully!");
       setIsModalVisible(false);
       console.log("Card details saved successfully!");
 
@@ -65,58 +90,60 @@ console.log(userId);
     }
   };
 
+  // Create a reference to the user's data
+  const userRef = ref(db, `users/${userId}`);
 
+  // Use get to retrieve the data
+  get(userRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        setUserData(userData.acc);
+      } else {
+        console.log("No data available");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
 
-// Create a reference to the user's data
-const userRef = ref(db, `users/${userId}`);
+  const handleTopUp = () => {
+    if (selectedCard && enteredAmount) {
+      try {
+        const user = auth.currentUser;
 
-// Use get to retrieve the data
-get(userRef).then((snapshot) => {
-  if (snapshot.exists()) {
-    const userData = snapshot.val();
-    setUserData(userData.acc);
-  } else {
-    console.log("No data available");
-  }
-}).catch((error) => {
-  console.error("Error fetching data:", error);
-});
+        // Assuming you have a user ID
+        const userId = user.uid;
+        const userRef = ref(db, `users/${userId}`);
 
-const handleTopUp = () => {
-  if (selectedCard && enteredAmount) {
-    try {
-      const user = auth.currentUser;
+        // Fetch user data
+        get(userRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              const updatedAcc =
+                parseFloat(userData.acc || 0) + parseFloat(enteredAmount);
 
-      // Assuming you have a user ID
-      const userId = user.uid;
-      const userRef = ref(db, `users/${userId}`);
+              // Update user data with the new account balance
+              set(userRef, { ...userData, acc: updatedAcc });
 
-      // Fetch user data
-      get(userRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          const updatedAcc = parseFloat(userData.acc || 0) + parseFloat(enteredAmount);
-          
-          // Update user data with the new account balance
-          set(userRef, { ...userData, acc: updatedAcc });
-
-          setEnteredAmount("");
-          console.log("User's acc updated successfully!");
-          setUserAcc(updatedAcc);
-        } else {
-          console.error("No data available for this user");
-        }
-      }).catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
-    } catch (error) {
-      console.error("Error updating user's acc:", error);
+              setEnteredAmount("");
+              console.log("User's acc updated successfully!");
+              setUserAcc(updatedAcc);
+            } else {
+              console.error("No data available for this user");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
+      } catch (error) {
+        console.error("Error updating user's acc:", error);
+      }
+    } else {
+      console.error("Please select a card and enter the amount.");
     }
-  } else {
-    console.error("Please select a card and enter the amount.");
-  }
-};
-
+  };
 
   const fetchCards = () => {
     const cardRef = ref(db, `SavedCards/${userId}`);
@@ -142,134 +169,96 @@ const handleTopUp = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <Stack.Screen options={{ header: () => null }} />
-      <View style={styles.container}>
-        <View style={styles.MainHeader}>
-          <Text style={styles.MainHeaderTitle}>Trip</Text>
-        </View>
-        <View style={styles.amountContainer}>
-          <View style={styles.iconContainer}>
-            <Image
-              style={styles.iconImg}
-              source={require("../../assets/images/AmmountIcon.png")}
-            />
-            <Text style={styles.iconCaption}>Deposite Money</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <View style={styles.MainHeader}>
+            <Text style={styles.MainHeaderTitle}>Trip</Text>
           </View>
-          <View style={styles.inputContainer}>
-            <Text styles={styles.amountLabel}>Amount</Text>
-            <TextInput
-              style={styles.amount}
-              placeholder="Enter Amount"
-              value={enteredAmount}
-              onChangeText={(text) => setEnteredAmount(text)}
-            />
+          <View style={styles.amountContainer}>
+            <View style={styles.iconContainer}>
+              <Image
+                style={styles.iconImg}
+                source={require("../../assets/images/AmmountIcon.png")}
+              />
+              <Text style={styles.iconCaption}>Deposite Money</Text>
+            </View>
+            <View style={styles.inputContainer}>
+              <Text styles={styles.amountLabel}>Amount</Text>
+              <TextInput
+                style={styles.amount}
+                placeholder="Enter Amount"
+                value={enteredAmount}
+                onChangeText={(text) => setEnteredAmount(text)}
+              />
+            </View>
           </View>
-        </View>
-        <Modal visible={isModalVisible} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-              <View style={styles.overlay} />
-            </TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Add New Card</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="NickName"
-                value={formData.nickname}
-                onChangeText={(text) => handleInputChange("nickname", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Card Number"
-                value={formData.cardNumber}
-                onChangeText={(text) => handleInputChange("cardNumber", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Holder's Name"
-                value={formData.holdersName}
-                onChangeText={(text) => handleInputChange("holdersName", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Month"
-                value={formData.month}
-                onChangeText={(text) => handleInputChange("month", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Year"
-                value={formData.year}
-                onChangeText={(text) => handleInputChange("year", text)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="CVV"
-                value={formData.cvv}
-                onChangeText={(text) => handleInputChange("cvv", text)}
-              />
-              <TouchableOpacity onPress={handleAddNewCard}>
-                <Text style={styles.modalBtn}>Next</Text>
+          <NewCard
+            isModalVisible={isModalVisible}
+            setIsModalVisible={setIsModalVisible}
+            formData={formData}
+            handleInputChange={handleInputChange}
+            handleAddNewCard={handleAddNewCard}
+          />
+          <View>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Select a Card</Text>
+              <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+                <Text style={styles.headerBtn}>
+                  {"+ Add New Cards".toUpperCase()}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-        <View>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Select a Card</Text>
-            <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-              <Text style={styles.headerBtn}>{"+ Add New Cards".toUpperCase()}</Text>
+          <View style={styles.dropdownContainer}>
+            <SelectDropdown
+              buttonStyle={styles.dropdown}
+              defaultButtonText="Select a Card"
+              buttonTextStyle={{
+                color: "#ffffff",
+                fontWeight: "bold",
+                fontSize: 20,
+                textAlign: "left",
+              }}
+              renderDropdownIcon={() => {
+                return (
+                  <Image
+                    style={{ width: 40, height: 40 }}
+                    source={require("../../assets/images/dropdown.png")}
+                  />
+                );
+              }}
+              dropdownIconPosition="right"
+              dropdownStyle={styles.dropdownContent}
+              data={cards.map((card) => card.cardNumber)}
+              onSelect={(selectedItem, index) => {
+                setSelectedCard(selectedItem);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+            />
+          </View>
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalLabel}>Total Amount (RS)</Text>
+            <Text style={styles.totalAmount}>{userAcc}</Text>
+          </View>
+          <View
+            style={{
+              marginTop: 40,
+              borderTopColor: "#0000001F",
+              borderTopWidth: 1,
+              paddingTop: 20,
+            }}
+          >
+            <TouchableOpacity style={styles.btn} onPress={handleTopUp}>
+              <Text style={styles.btnText}>Top Up Yourself</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.dropdownContainer}>
-          <SelectDropdown
-            buttonStyle={styles.dropdown}
-            defaultButtonText="Select a Card"
-            buttonTextStyle={{
-              color: "#ffffff",
-              fontWeight: "bold",
-              fontSize: 20,
-              textAlign: "left",
-            }}
-            renderDropdownIcon={() => {
-              return (
-                <Image
-                  style={{ width: 40, height: 40 }}
-                  source={require("../../assets/images/dropdown.png")}
-                />
-              );
-            }}
-            dropdownIconPosition="right"
-            dropdownStyle={styles.dropdownContent}
-            data={cards.map(card => card.cardNumber)}
-            onSelect={(selectedItem, index) => {
-              setSelectedCard(selectedItem);
-            }}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return selectedItem;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item;
-            }}
-          />
-        </View>
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total Amount (RS)</Text>
-          <Text style={styles.totalAmount}>{userAcc}</Text>
-        </View>
-        <View
-          style={{
-            marginTop: 40,
-            borderTopColor: "#0000001F",
-            borderTopWidth: 1,
-            paddingTop: 20,
-          }}
-        >
-          <TouchableOpacity style={styles.btn} onPress={handleTopUp}>
-            <Text style={styles.btnText}>Top Up Yourself</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
