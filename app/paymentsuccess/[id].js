@@ -1,10 +1,55 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 import { Padding, FontFamily, FontSize, Color, Border } from "../../styles/paymentsuccess";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { db } from "../../firebase/config";
+import { auth } from '../../firebase/config';
+import { useRoute } from '@react-navigation/native';
+import { Stack , useRouter } from "expo-router";
+import { getDatabase, ref, onValue, push, set } from "firebase/database";
 
 const PaymentSuccess = () => {
+  const route = useRoute();
+  const router = useRouter();
+  const { id } = route.params;
+
+  const userId = auth.currentUser.uid;
+
+  const [history, sethistory] = useState([]);
+
+  const fetchhistory = () => {
+    const cardRef = ref(db, `triphistory/${userId}/${id}`);
+    onValue(cardRef, (snapshot) => {
+      const cardsData = snapshot.val();
+      if (cardsData) {
+        const cardsArray = Object.entries(cardsData).map(([key, value]) => ({
+          ...value,
+        }));
+        sethistory(cardsData);
+      } else {
+        sethistory([]);
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchhistory();
+  }, []);
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+
   return (
     <View style={styles.paymentSuccess}>
       <View style={[styles.section, styles.sectionFlexBox]}>
@@ -40,7 +85,7 @@ const PaymentSuccess = () => {
                   <View style={styles.dateSpaceBlock}>
                     <Text style={[styles.text, styles.textFlexBox]}>Date</Text>
                     <Text style={[styles.invNumber, styles.invNumberTypo]}>
-                      24 February 2023
+                      {formattedDate}
                     </Text>
                   </View>
                   <View style={styles.dateSpaceBlock}>
@@ -48,7 +93,7 @@ const PaymentSuccess = () => {
                       Amount Paid
                     </Text>
                     <Text style={[styles.invNumber, styles.invNumberTypo]}>
-                      RS 150.00
+                      {history.fair}
                     </Text>
                   </View>
                 </View>
@@ -66,7 +111,7 @@ const PaymentSuccess = () => {
                       Time
                     </Text>
                     <Text style={[styles.paymentMethod1, styles.text3FlexBox]}>
-                      01:16 PM
+                      {currentTime}
                     </Text>
                   </View>
                   <View style={[styles.time, styles.timeFlexBox]}>
@@ -93,7 +138,7 @@ const PaymentSuccess = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity style={[styles.ctaDownload1, styles.ctaDownloadFlexBox]}>
+            <TouchableOpacity style={[styles.ctaDownload1, styles.ctaDownloadFlexBox]} onPress={() => router.push("/user")}>
                 <Text
                   style={[styles.downloadInvoice1, styles.downloadInvoiceTypo]}
                 >

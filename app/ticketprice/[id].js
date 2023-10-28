@@ -1,13 +1,101 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, View , TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Color, FontSize, FontFamily, Border, Padding } from "../../styles/GlobalStyles";
+import { db } from "../../firebase/config";
+import { auth } from '../../firebase/config';
+import { useRoute } from '@react-navigation/native';
+import { Stack , useRouter } from "expo-router";
+import { getDatabase, ref, onValue, push, set } from "firebase/database";
 
 const TicketPrice = () => {
-  const handlePayment = () => {
-    // Add your payment logic here
-    alert("Payment completed!"); // Placeholder, replace with actual payment logic
+  const route = useRoute();
+  const router = useRouter();
+  const { id } = route.params;
+
+  const [history, sethistory] = useState([]);
+  const [user , setUser] = useState(null);
+
+
+  const userId = auth.currentUser.uid;
+
+  const fetchuser = () => {
+    const cardRef = ref(db, `users/${userId}`);
+    onValue(cardRef, (snapshot) => {
+      const cardsData = snapshot.val();
+      if (cardsData) {
+        const cardsArray = Object.entries(cardsData).map(([key, value]) => ({
+          ...value,
+        }));
+        setUser(cardsData);
+      } else {
+        setUser([]);
+      }
+    });
   };
+
+  useEffect(() => {
+    fetchuser();
+  }, []);
+
+  const fetchhistory = () => {
+    const cardRef = ref(db, `triphistory/${userId}/${id}`);
+    onValue(cardRef, (snapshot) => {
+      const cardsData = snapshot.val();
+      if (cardsData) {
+        const cardsArray = Object.entries(cardsData).map(([key, value]) => ({
+          ...value,
+        }));
+        sethistory(cardsData);
+      } else {
+        sethistory([]);
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchhistory();
+  }, []);
+
+  const handlePayment = () => {
+    if (history.fair >= user.acc) {
+      router.push(`/topup`);// Replace 'ScreenFor80' with the actual screen name
+    } else {
+      const paymentDetails = {
+        tripid : id,
+        amount : history.fair,
+        date : history.date,
+        time : history.time,
+      };
+  
+      try {
+        const cardRef = ref(db, `PaymentDetails/${userId}`);
+        const newCardRef = push(cardRef);
+        set(newCardRef, paymentDetails);
+        console.log("Payment details saved successfully!");
+
+        const userRef = ref(db, `users/${userId}`);
+
+        // Use set to update the acc property
+        set(userRef, {
+          acc: user.acc - history.fair,
+        })
+        .then(() => {
+          console.log(`acc updated successfully!`);
+        })
+        .catch((error) => {
+          console.error(`Error updating acc: `, error);
+        });
+
+
+
+      } catch (error) {
+        console.error("Error saving card details:", error);
+      }
+      router.push(`/paymentsuccess/${id}`); // Replace 'ScreenForOtherAmount' with the actual screen name
+    }
+  };
+
   return (
     <View style={[styles.ticketPrice, styles.tabBarBg]}>
       <View style={[styles.ticketDetail, styles.tabFlexBox]}>
@@ -22,16 +110,16 @@ const TicketPrice = () => {
         <View style={[styles.divider, styles.detailsSpaceBlock]} />
         <View style={[styles.flightDetails, styles.detailsSpaceBlock]}>
           <View style={styles.departure}>
-            <Text style={[styles.cityName, styles.cityTypo]}>Pettah(CMB)</Text>
-            <Text style={[styles.time, styles.timeTypo]}>12:00 PM</Text>
-            <Text style={[styles.date, styles.dateTypo]}>24 Feb 2023</Text>
+            <Text style={[styles.cityName, styles.cityTypo]}>{history.startPoint}</Text>
+            <Text style={[styles.time, styles.timeTypo]}>{history.time}</Text>
+            <Text style={[styles.date, styles.dateTypo]}>{history.date}</Text>
           </View>
           <View style={[styles.arrival, styles.arrivalPosition]}>
             <Text style={[styles.cityName1, styles.time1FlexBox]}>
-              SLIIT(Malabe)
+            {history.endPoint}
             </Text>
-            <Text style={[styles.time1, styles.time1FlexBox]}>01:15 PM</Text>
-            <Text style={[styles.date1, styles.time1FlexBox]}>24 Feb 2023</Text>
+            <Text style={[styles.time1, styles.time1FlexBox]}>{history.time}</Text>
+            <Text style={[styles.date1, styles.time1FlexBox]}>{history.date}</Text>
           </View>
           <View style={[styles.duration, styles.tabFlexBox]}>
             <View style={[styles.pointGroup, styles.detailsFlexBox]}>
@@ -48,9 +136,6 @@ const TicketPrice = () => {
               />
               <View style={[styles.icPlane, styles.time2Position]} />
             </View>
-            <Text style={[styles.durationTime, styles.dateTypo]}>
-              Duration 1h 15m
-            </Text>
           </View>
         </View>
         <View style={[styles.divider, styles.detailsSpaceBlock]} />
@@ -58,7 +143,7 @@ const TicketPrice = () => {
           <View style={styles.airline}>
             <View style={styles.name}>
               <Text style={[styles.cityName, styles.cityTypo]}>Name</Text>
-              <Text style={[styles.name1, styles.name1Typo]}>Tharindu</Text>
+              <Text style={[styles.name1, styles.name1Typo]}>Oshada</Text>
             </View>
             <View style={styles.class1}>
               <Text style={[styles.cityName, styles.cityTypo]}>Type</Text>
@@ -75,7 +160,7 @@ const TicketPrice = () => {
                 Total Price
               </Text>
               <Text style={[styles.bookingCode1, styles.name1Typo]}>
-                RS 150
+                RS.{history.fair}
               </Text>
             </View>
             <View style={[styles.airlineName1, styles.bookingCodeFlexBox]}>

@@ -18,9 +18,11 @@ import {
 import { db } from "../../firebase/config";
 import { auth } from '../../firebase/config';
 import { useRoute } from '@react-navigation/native';
+import { Stack , useRouter } from "expo-router";
 
 export default function SavedCards() {
   const route = useRoute();
+  const router = useRouter();
   const { id } = route.params;
 
   const userId = auth.currentUser.uid;
@@ -52,6 +54,7 @@ export default function SavedCards() {
 
   const handleConfirm = () => {
     setShowPopup(false);
+    router.push(`/ticketprice/${id}`);
     // Implement your logic here when Confirm is clicked
   };
 
