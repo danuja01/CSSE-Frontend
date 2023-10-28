@@ -132,8 +132,10 @@ export default function Scan() {
             const cardRef = ref(db, `triphistory/${userId}`);
             const newCardRef = push(cardRef); 
             set(newCardRef, TripDetails);
+            const id = newCardRef.key;
             console.log("Trip History details saved successfully!");
-            router.push("/trip");
+            console.log(`Trip History ID: ${id}`);
+            router.push(`/trip/${id}`);
           } catch (error) {
             console.error("Error saving card details:", error);
           }
