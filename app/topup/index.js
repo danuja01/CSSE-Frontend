@@ -31,6 +31,10 @@ export default function SavedCards() {
     });
   };
 
+// Assuming you have a user ID
+const userId = auth.currentUser.uid;
+console.log(userId);
+
   const handleAddNewCard = () => {
     const cardDetails = {
       nickname: formData.nickname,
@@ -42,7 +46,7 @@ export default function SavedCards() {
     };
 
     try {
-      const cardRef = ref(db, "SavedCards");
+      const cardRef = ref(db, `SavedCards/${userId}`);
       const newCardRef = push(cardRef); 
       set(newCardRef, cardDetails);
       setIsModalVisible(false);
@@ -61,9 +65,7 @@ export default function SavedCards() {
     }
   };
 
-    // Assuming you have a user ID
-const userId = auth.currentUser.uid;
-console.log(userId);
+
 
 // Create a reference to the user's data
 const userRef = ref(db, `users/${userId}`);
@@ -117,7 +119,7 @@ const handleTopUp = () => {
 
 
   const fetchCards = () => {
-    const cardRef = ref(db, "SavedCards");
+    const cardRef = ref(db, `SavedCards/${userId}`);
 
     onValue(cardRef, (snapshot) => {
       const cardsData = snapshot.val();

@@ -15,6 +15,7 @@ import CardModel from "../../components/card-model";
 import { ScrollView } from "react-native-gesture-handler";
 import { getDatabase, ref, onValue, push, set } from "firebase/database";
 import { db } from "../../firebase/config"; // Import your Firebase config
+import { auth } from '../../firebase/config';
 
 export default function SavedCards() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,6 +36,8 @@ export default function SavedCards() {
     });
   };
 
+  const userId = auth.currentUser.uid;
+
   const handleAddNewCard = () => {
     const cardDetails = {
       nickname: formData.nickname,
@@ -46,7 +49,7 @@ export default function SavedCards() {
     };
 
     try {
-      const cardRef = ref(db, "SavedCards");
+      const cardRef = ref(db, `SavedCards/${userId}`);
       const newCardRef = push(cardRef); 
       set(newCardRef, cardDetails);
       setIsModalVisible(false);
@@ -66,7 +69,7 @@ export default function SavedCards() {
   };
 
   const fetchCards = () => {
-    const cardRef = ref(db, "SavedCards");
+    const cardRef = ref(db, `SavedCards/${userId}`);
 
     onValue(cardRef, (snapshot) => {
       const cardsData = snapshot.val();
