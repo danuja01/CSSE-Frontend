@@ -71,20 +71,21 @@ export default function SavedCards() {
 
   const fetchCards = () => {
     const cardRef = ref(db, `SavedCards/${userId}`);
-
+  
     onValue(cardRef, (snapshot) => {
       const cardsData = snapshot.val();
       if (cardsData) {
-        const cardsArray = Object.entries(cardsData).map(([key, value]) => ({
-          id: key,
-          ...value,
-        }));
-        setCards(cardsArray);
+        const reviewsArray = Object.entries(cardsData).map(
+          ([key, value]) => ({ ...value, id: key })
+        );
+        setCards(reviewsArray);
       } else {
-        setCards([]);
+        setCards([]); // Set cards to an empty array if there is no data
       }
     });
   };
+
+  
 
   useEffect(() => {
     fetchCards();
@@ -108,6 +109,7 @@ export default function SavedCards() {
               <ScrollView showsVerticalScrollIndicator={false}>
                 {cards.map((card) => (
                   <CardModel
+                    card={card}
                     key={card.id}
                     cardNumber={card.cardNumber}
                     holdersName={card.holdersName}

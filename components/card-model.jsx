@@ -1,7 +1,28 @@
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React from "react";
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from "react-native";
+import { db  ,auth} from "../firebase/config"; // Import the Firebase database instance
+import { useRoute } from '@react-navigation/native';
+import { Stack , useRouter } from "expo-router";
+import { getDatabase, ref, onValue, push, set , remove } from "firebase/database";
 
-const CardModel = ({ cardNumber, holdersName, month, year , nickname }) => {
+const CardModel = ({ key, cardNumber, holdersName, month, year, nickname , card }) => {
+
+  const userId = auth.currentUser.uid;
+
+  const handleDelete = () => {
+      try {
+        remove(ref(db, `SavedCards/${userId}/${card.id}`));
+  
+        console.log(`Card with ID ${key} deleted successfully.`);
+        console.log("Card ID:", key);
+      } catch (error) {
+        console.error(`Error deleting review with ID ${key}:`, error);
+      }
+  };
+
+  const handleUpdate = () => {
+  };
+
   return (
     <View>
       <TouchableOpacity activeOpacity={0.8}>
@@ -10,7 +31,12 @@ const CardModel = ({ cardNumber, holdersName, month, year , nickname }) => {
           style={styles.card}
           imageStyle={styles.backgroundImage}
         >
-          {/* The nickname is currently hardcoded, you can add it dynamically */}
+          <TouchableOpacity style={styles.button} onPress={handleDelete}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Update</Text>
+          </TouchableOpacity>
           <Text style={styles.nickName}>{nickname}</Text>
           <Text style={styles.number}>{cardNumber}</Text>
           <View style={styles.cardContainer}>
@@ -36,8 +62,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backgroundImage: {
-    borderRadius: 10, // to match the card's border radius
-    overflow: "hidden", // to ensure the image is clipped to the border radius
+    borderRadius: 10,
+    overflow: "hidden",
   },
   nickName: {
     fontSize: 14,
@@ -67,6 +93,19 @@ const styles = StyleSheet.create({
   },
   expiryDate: {
     fontSize: 14,
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
