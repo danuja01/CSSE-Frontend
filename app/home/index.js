@@ -49,9 +49,6 @@ export default Home = () => {
         <Balance />
         <Services />
         <Transaction />
-        <TouchableOpacity onPress={() => router.push("/trip")}>
-          <Text>sasasa</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
