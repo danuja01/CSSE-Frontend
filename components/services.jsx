@@ -13,7 +13,7 @@ const Services = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.servicesContainer}>
-        <TouchableOpacity style={styles.serviceContainer}>
+        <TouchableOpacity style={styles.serviceContainer} onPress={() => router.push("/qr-scanner")}>
           <Image
             source={require("../assets/images/Icon4.png")}
             resizeMode="contain"
@@ -32,7 +32,7 @@ const Services = () => {
           />
           <Text style={styles.serviceTitle}>Top Up</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.serviceContainer}>
+        <TouchableOpacity style={styles.serviceContainer} onPress={() => router.push("/qr-scanner")} >
           <Image
             source={require("../assets/images/Icon2.png")}
             resizeMode="contain"
@@ -40,7 +40,7 @@ const Services = () => {
           />
           <Text style={styles.serviceTitle}>QR</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.serviceContainer}>
+        <TouchableOpacity style={styles.serviceContainer} onPress={() => router.push("/saved-cards")}>
           <Image
             source={require("../assets/images/Icon1.png")}
             resizeMode="contain"

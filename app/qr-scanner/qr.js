@@ -51,8 +51,9 @@ export default function Scan() {
       [{ text: "OK", onPress: () => setScanned(false) }]
     );
 
+
     // Create a reference to the user's data
-    const userRef = ref(db, `stops/${stops}`);
+    const userRef = ref(db, `stops/${data}`);
 
     // Use get to retrieve the data
     get(userRef).then((snapshot) => {
@@ -155,6 +156,9 @@ export default function Scan() {
     const distance = userData1 - userData;
     return distance * 10;
   }
+
+  console.log(userData);
+  console.log(userData1);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
